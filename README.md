@@ -17,7 +17,7 @@ Spkeras can easily get and evaluate rate-based spiking neural networks (SNNs), b
 
 
 ### Built With
-Spkeras has extension layers, e.g. CurrentBias and SpikeForward, following Tensorflow-keras design syntax. 
+Spkeras has extension layers, e.g. CurrentBias and SpikeForward, following Tensorflow-keras design syntax.
 * [Tensorflow-keras](https://www.tensorflow.org/guide/keras/sequential_model)
 
 <!-- GETTING STARTED -->
@@ -62,7 +62,7 @@ from spkeras.models import cnn_to_snn
 snn_model = cnn_to_snn(signed_bit=0)(cnn_model,x_train)
 
 #Evaluate SNN accuracy
-##Default: timesteps=256, thresholding=0.5, scaling_factor=1, noneloss=False, spike_ext=0 
+##Default: timesteps=256, thresholding=0.5, scaling_factor=1, noneloss=False, spike_ext=0
 _,acc = snn_model.evaluate(x_test,y_test,timesteps=256)
 
 #Count SNN spikes
@@ -80,7 +80,7 @@ n = snn_model.NeuronNumbers(mode=0)
 --------------------------
 cnn_to_snn
 --------------------------
-sigbed_bit: bitwidth of weights, default 0 (32-bit) 
+sigbed_bit: bitwidth of weights, default 0 (32-bit)
 amp_factor: amplification factor, default 100
 method    : default 1
 epsilon   : 0.001
@@ -90,7 +90,7 @@ evaluate & SpikeCounter
 timesteps   : inference time, default 256.
 thresholding: default 0.5.
 noneloss    : noneloss mode, default False.
-spike_ext   : extra inference time, default 0. (-1 for unlimited inference time) 
+spike_ext   : extra inference time, default 0. (-1 for unlimited inference time)
 --------------------------
 SpikeCounter
 --------------------------
@@ -104,7 +104,32 @@ mode: set 1 to exclude average pooling layer, default 0
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-_For more examples, please refer to the [Examples](./examples/)_
+_For more examples, please refer to the [Examples](./examples/)._
+
+#### Restrictions
+
+SpKeras only works with...
+- ReLU as the activation type.
+  ```diff
+  ! model.add( Activation('relu') )
+  ```
+- Models with separately stacked Activation layers as below.
+  ```diff
+  + model.add( Conv2D(...) )
+  + model.add( BatchNormalization() )
+  + model.add( Activation('relu') )
+  + model.add( Dropout(0.3) )
+  ```
+  or
+  ```yaml
+  keras.models.Sequential( [
+      keras.layers.Conv2D(...),
+      keras.layers.Activation( 'relu' ),
+      keras.layers.AveragePooling2D(),
+      ...
+  ] )
+  ```
+at the moment.
 
 <!-- LICENSE -->
 ## License
@@ -115,4 +140,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- PUBLICATION -->
 ## More details
 <a href="https://arxiv.org/abs/2103.00944">paper</a>
-
